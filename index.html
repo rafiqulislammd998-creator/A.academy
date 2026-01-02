@@ -1820,134 +1820,120 @@ body.dark-mode footer {
         </div>
     `;
 }
-
-        // ==================== CONTENT VIEWING ====================
-        async function viewContent(type, id) {
-            console.log(`Viewing content: ${type} - ${id}`);
-            setLoading(true);
-            
-            try {
-                let tableName;
-                switch(type) {
-                    case 'fitness': tableName = 'fitness_plans'; break;
-                    case 'workout': tableName = 'workout_plans'; break;
-                    case 'discussion': tableName = 'discussions'; break;
-                    default: throw new Error('Invalid content type');
-                }
-                
-                // Fetch the content
-                const { data, error } = await supabase
-                    .from(tableName)
-                    .select('*')
-                    .eq('id', id)
-                    .single();
-                
-                if (error) throw error;
-                
-                // Increment view count
-                await MySupabase
-                    .from(tableName)
-                    .update({ views: (data.views || 0) + 1 })
-                    .eq('id', id);
-                
-                // Update local state
-                const index = state.allContent.findIndex(item => 
-                    item.id === id && item.type === type);
-                if (index !== -1) {
-                    state.allContent[index].views = (data.views || 0) + 1;
-                    updateStatistics();
-                }
-                
-                // Display content
-                displayContent(data, type);
-            } catch (error) {
-                console.error('Error viewing content:', error);
-                showToast('Failed to load content', 'error');
-            } finally {
-                setLoading(false);
-            }
+// ==================== CONTENT VIEWING ====================
+async function viewContent(type, id) {
+    console.log(`Viewing content: ${type} - ${id}`);
+    setLoading(true);
+    
+    try {
+        let tableName;
+        switch(type) {
+            case 'fitness': tableName = 'fitness_plans'; break;
+            case 'workout': tableName = 'workout_plans'; break;
+            case 'discussion': tableName = 'discussions'; break;
+            default: throw new Error('Invalid content type');
+        }
+        
+        const { data, error } = await mySupabase
+            .from(tableName)
+            .select('*')
+            .eq('id', id)
+            .single();
+        
+        if (error) throw error;
+        
+        await mySupabase
+            .from(tableName)
+            .update({ views: (data.views || 0) + 1 })
+            .eq('id', id);
+        
+        const index = state.allContent.findIndex(item => 
+            item.id === id && item.type === type);
+        
+        if (index !== -1) {
+            state.allContent[index].views = (data.views || 0) + 1;
+            updateStatistics();
         }
 
-        function displayContent(data, type) {
-            console.log('Displaying content modal');
-            const title = document.getElementById('viewTitle');
-            const content = document.getElementById('viewContent');
-            
-            title.textContent = data.title;
-            
-            const tags = data.tags ? data.tags.split(',').map(tag => tag.trim()) : [];
-            const created = formatDate(data.created_at);
-            const author = data.author || 'Anonymous';
-            const views = (data.views || 0) + 1;
-            
-            let additionalInfo = '';
-            if (type === 'workout') {
-                additionalInfo = `
-                    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;">
-                        ${data.duration ? `
-                            <div style="background: rgba(16, 185, 129, 0.1); padding: 8px 16px; border-radius: 8px;">
-                                <i class="fas fa-clock"></i> ${data.duration} minutes
-                            </div>
-                        ` : ''}
-                        ${data.focus_area ? `
-                            <div style="background: rgba(99, 102, 241, 0.1); padding: 8px 16px; border-radius: 8px;">
-                                <i class="fas fa-dumbbell"></i> ${data.focus_area}
-                            </div>
-                        ` : ''}
+        displayContent(data, type);
+
+    } catch (error) {
+        console.error('Error viewing content:', error);
+        showToast('Failed to load content', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+// ==================== CONTENT DISPLAY ====================
+// এই ফাংশনটি মডালের ভেতর ডাটাগুলোকে সাজিয়ে দেখায়
+function displayContent(data, type) {
+    console.log('Displaying content modal');
+    
+    // HTML এলিমেন্টগুলো খুঁজে নেওয়া
+    const title = document.getElementById('viewTitle');
+    const content = document.getElementById('viewContent');
+    
+    // টাইটেল সেট করা
+    if (title) title.textContent = data.title;
+    
+    // ট্যাগ প্রসেসিং
+    let tagsArray = [];
+    if (Array.isArray(data.tags)) {
+        tagsArray = data.tags;
+    } else if (data.tags && typeof data.tags === 'string') {
+        tagsArray = data.tags.split(',').map(tag => tag.trim());
+    }
+
+    const created = formatDate(data.created_at);
+    const author = data.author || 'Anonymous';
+    const views = (data.views || 0) + 1;
+    
+    // ওয়ার্কআউট টাইপ হলে বাড়তি তথ্য তৈরি করা
+    let additionalInfo = '';
+    if (type === 'workout') {
+        const focusArea = data.focus || data.focus_area || 'Full Body';
+        additionalInfo = `
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; margin-bottom: 20px;">
+                ${data.duration ? `
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 8px 16px; border-radius: 8px; color: #10b981; font-weight: 500;">
+                        <i class="fas fa-clock"></i> ${data.duration} minutes
                     </div>
-                `;
-            }
-            
-            content.innerHTML = `
-                <div class="view-content">
-                    <div class="view-header">
-                        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
-                            <span style="background: rgba(99, 102, 241, 0.1); color: var(--primary); 
-                                   padding: 6px 16px; border-radius: 20px; font-weight: 600;">
-                                ${data.category}
-                            </span>
-                            ${data.difficulty ? `
-                                <span style="background: rgba(245, 158, 11, 0.1); color: var(--warning); 
-                                       padding: 6px 16px; border-radius: 20px; font-weight: 600;">
-                                    ${data.difficulty}
-                                </span>
-                            ` : ''}
-                        </div>
-                        
-                        <div class="view-meta">
-                            <span><i class="fas fa-user"></i> By ${escapeHtml(author)}</span>
-                            <span><i class="fas fa-calendar"></i> ${created}</span>
-                            <span><i class="fas fa-eye"></i> ${views} views</span>
-                        </div>
-                        
-                        ${additionalInfo}
-                        
-                        ${tags.length > 0 ? `
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;">
-                                ${tags.map(tag => `
-                                    <span style="background: rgba(99, 102, 241, 0.1); color: var(--primary); 
-                                           padding: 4px 12px; border-radius: 16px; font-size: 0.875rem;">
-                                        #${tag}
-                                    </span>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                    
-                    <div style="margin: 2rem 0;">
-                        <h3 style="margin-bottom: 1rem;">Description</h3>
-                        <p style="font-size: 1.125rem; line-height: 1.7;">${escapeHtml(data.description || '')}</p>
-                    </div>
-                    
-                    <div class="view-body">
-                        ${escapeHtml(data.content || '').replace(/\n/g, '<br>')}
-                    </div>
+                ` : ''}
+                <div style="background: rgba(99, 102, 241, 0.1); padding: 8px 16px; border-radius: 8px; color: #6366f1; font-weight: 500;">
+                    <i class="fas fa-dumbbell"></i> ${focusArea}
                 </div>
-            `;
-            
-            openModal(elements.viewContentModal);
-        }
+            </div>
+        `;
+    }
 
+    // মডালের মূল বডি রেন্ডার করা
+    if (content) {
+        content.innerHTML = `
+            <div class="view-meta" style="margin-bottom: 20px; color: #6b7280; font-size: 0.9rem; display: flex; gap: 12px;">
+                <span><i class="fas fa-user"></i> ${author}</span>
+                <span><i class="fas fa-calendar"></i> ${created}</span>
+                <span><i class="fas fa-eye"></i> ${views} views</span>
+            </div>
+            
+            ${additionalInfo}
+            
+            <div class="view-body" style="line-height: 1.8; font-size: 1.1rem; color: var(--dark); margin-bottom: 30px; white-space: pre-wrap;">
+                ${data.body || data.content || 'No description provided.'}
+            </div>
+            
+            <div class="view-tags" style="display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--card-border); padding-top: 20px;">
+                ${tagsArray.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+            </div>
+        `;
+    }
+
+    // মডালটি ওপেন করা
+    if (elements && elements.viewContentModal) {
+        openModal(elements.viewContentModal);
+    }
+}
+            
         // ==================== CONTENT CREATION ====================
 async function handleContentSubmit(e) {
     e.preventDefault();
