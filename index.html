@@ -113,13 +113,16 @@
             margin-bottom: 1rem;
         }
 
-        h1 {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+       h1 {
+     font-size: clamp(2rem, 4vw, 2.8rem);
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: text;
+    -webkit-text-fill-color: unset;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.45);
+    color: white
+}
+
 
         h2 {
             font-size: clamp(2rem, 4vw, 2.5rem);
@@ -340,12 +343,15 @@
             border-radius: 12px;
             box-shadow: var(--shadow-lg);
             min-width: 180px;
-            z-index: 1001;
+            z-index: 9999;
             display: none;
             margin-top: 8px;
             padding: 8px 0;
             animation: fadeIn 0.2s ease;
         }
+        .dropdown-menu.active {
+    display: block;
+}
 
         .dropdown-menu.show {
             display: block;
@@ -659,6 +665,7 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             line-height: 1.3;
+            color: rgb(137, 118, 219) !important;
         }
 
         .card-meta {
@@ -677,7 +684,7 @@
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
-            overflow: hidden;
+            overflow: visible;
             flex-grow: 1;
             font-size: 0.9rem;
             position: relative;
@@ -788,7 +795,7 @@
         }
 
         #viewContentModal .modal-content {
-            max-width: var(--modal-xl);
+            max-width: 800px;
             max-height: 90vh;
         }
 
@@ -981,185 +988,394 @@
             visibility: visible;
         }
 
-        /* View Content Styles */
-        .view-content-container {
-            padding: 20px 0;
-        }
-
-        .view-header {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .view-title {
-            font-size: clamp(1.8rem, 3vw, 2.5rem);
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 0.8rem;
-            color: var(--dark);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .view-meta-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 1rem;
-        }
-
-        .view-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .view-meta-item i {
-            width: 16px;
-            text-align: center;
-        }
-
-        .view-body {
+        /* NEW: Professional Reading View Styles (from sample) */
+        .reading-view-container {
             background: var(--lighter);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            line-height: 1.8;
-            font-size: 1.1rem;
-            border: 1px solid var(--card-border);
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-lg);
         }
 
-        .view-body-content {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--dark);
+        .reading-view-container:hover {
+            transform: translateY(-5px);
         }
 
-        .view-body-content h3 {
-            font-size: 1.3rem;
-            margin: 1.5rem 0 0.8rem;
-            color: var(--primary);
+        /* Header */
+        .reading-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 40px 40px 30px;
+            color: white;
+            position: relative;
         }
 
-        .view-body-content p {
-            margin-bottom: 1rem;
+        .reading-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
         }
 
-        .view-body-content ul, 
-        .view-body-content ol {
-            padding-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .view-body-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .view-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--card-border);
-        }
-
-        .view-tag {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-            padding: 6px 12px;
+        .category-badge {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            color: #ffffff; /* পিওর হোয়াইট */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* হালকা বর্ডার যা ব্যাজটিকে আলাদা করবে */
+}
+        
+
+        .reading-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            color: white;
         }
 
-        .view-actions {
+        .reading-meta {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--card-border);
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            opacity: 0.9;
         }
 
-        .view-stats {
+        .meta-item {
             display: flex;
-            gap: 15px;
             align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        .view-stat {
+        /* Content Area */
+        .reading-content {
+            padding: 40px;
+            position: relative;
+        }
+
+        .content-wrapper {
+            position: relative;
+        }
+
+        .content-block {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .content-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--dark);
+            width: 100%;
+            text-align: left;
+        }
+
+        .content-text.short-content {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            padding: 20px 0;
+        }
+
+        /* Read time indicator */
+        .read-time {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            background: var(--light);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--gray);
             display: flex;
             align-items: center;
             gap: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Quote styling */
+        .content-quote {
+            border-left: 4px solid var(--primary);
+            padding-left: 20px;
+            margin: 30px 0;
+            font-style: italic;
+            color: var(--gray-dark);
+            font-size: 1.1rem;
+            background: rgba(99, 102, 241, 0.05);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* Tags */
+        .content-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .reading-tag {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .reading-tag:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Actions Bar */
+        .reading-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 40px;
+            background: var(--light);
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gray-light);
+            color: var(--dark);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .reading-btn-like {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            font-size: 1.1rem;
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reading-btn-like:hover,
+        .reading-btn-like.active {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .reading-stats {
+            display: flex;
+            gap: 20px;
+            color: var(--gray);
+        }
+
+        .reading-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Author box */
+        .author-box {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 25px;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .author-info h4 {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .author-info p {
             color: var(--gray);
             font-size: 0.9rem;
         }
 
-        .view-like-btn {
-            background: transparent;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 1rem;
+        /* Typography enhancements */
+        .content-text h3 {
+            margin: 1.5rem 0 0.8rem;
+            color: var(--primary);
+            font-size: 1.4rem;
         }
 
-        .view-like-btn:hover {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
+        .content-text p {
+            margin-bottom: 1rem;
+            color: var(--dark);
         }
 
-        .view-like-btn.liked {
-            color: var(--danger);
-            background: rgba(239, 68, 68, 0.1);
+        .content-text ul,
+        .content-text ol {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
         }
 
-        /* Responsive Table Style */
-        .view-table {
+        .content-text li {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .content-text p + p {
+            margin-top: 1rem;
+        }
+
+        /* Table styling for workout plans */
+        .workout-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
-            background: var(--lighter);
-            border-radius: 8px;
+            margin: 1.5rem 0;
+            background: var(--light);
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
         }
 
-        .view-table th {
+        .workout-table th {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 12px 15px;
+            padding: 15px;
             text-align: left;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
-        .view-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--card-border);
+        .workout-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-light);
+            color: var(--dark);
         }
 
-        .view-table tr:last-child td {
+        .workout-table tr:last-child td {
             border-bottom: none;
         }
 
-        .view-table tr:hover {
+        .workout-table tr:hover {
             background: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Responsive for reading view */
+        @media (max-width: 768px) {
+            .reading-header,
+            .reading-content,
+            .reading-actions {
+                padding: 30px 20px;
+            }
+
+            .read-time {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                display: inline-flex;
+            }
+
+            .reading-meta {
+                gap: 15px;
+            }
+
+            .meta-item {
+                font-size: 0.85rem;
+            }
+
+            .content-text {
+                font-size: 1rem;
+            }
+
+            .reading-actions {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .reading-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .reading-title {
+                font-size: 1.5rem;
+            }
+
+            .reading-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+
+            .author-box {
+                flex-direction: column;
+                text-align: center;
+            }
         }
 
         /* Footer */
@@ -1467,8 +1683,8 @@
             }
             
             /* Mobile dropdown fix */
-            .dropdown-menu {
-                position: fixed;
+            
+               .dropdown-menu { position: fixed;
                 bottom: 0;
                 left: 0;
                 right: 0;
@@ -1483,15 +1699,6 @@
             .dropdown-item {
                 padding: 12px 16px;
                 font-size: 1rem;
-            }
-            
-            .view-body {
-                padding: 1rem;
-                font-size: 1rem;
-            }
-            
-            .view-meta-grid {
-                grid-template-columns: 1fr;
             }
             
             @keyframes slideUp {
@@ -2387,104 +2594,108 @@
         const likes = data.likes || 0;
         const liked = localStorage.getItem(`liked_${type}_${data.id}`) === 'true';
         
-        let additionalInfo = '';
-        if (type === 'workout') {
-            const focusArea = data.focus || data.focus_area || 'Full Body';
-            const duration = data.duration ? `${data.duration} minutes` : 'Not specified';
-            additionalInfo = `
-                <div class="view-meta-grid">
-                    <div class="view-meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span>Duration: ${duration}</span>
-                    </div>
-                    <div class="view-meta-item">
-                        <i class="fas fa-dumbbell"></i>
-                        <span>Focus: ${focusArea}</span>
-                    </div>
-                    ${data.difficulty ? `
-                    <div class="view-meta-item">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Difficulty: ${data.difficulty}</span>
-                    </div>
-                    ` : ''}
-                </div>
-            `;
-        }
-
-        const formattedContent = formatContentForDisplay(data.body || data.content || 'No description provided.');
+        // Calculate read time
+        const wordCount = (data.body || data.content || '').split(/\s+/).length;
+        const readTime = Math.max(1, Math.ceil(wordCount / 200));
+        
+        // Format content with enhanced styling
+        const formattedContent = formatContentForDisplay(data.body || data.content || 'No description provided.', type);
         
         if (content) {
             content.innerHTML = `
-                <div class="view-content-container">
-                    <div class="view-header">
-                        <h1 class="view-title">${data.title}</h1>
+                <div class="reading-view-container">
+                    <!-- Header Section -->
+                    <div class="reading-header">
+                        <span class="category-badge">
+                            <i class="fas fa-${getTypeIcon(type)}"></i>
+                            ${getTypeName(type)}
+                        </span>
                         
-                        <div class="view-meta" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
-                            <div class="view-meta-item">
-                                <i class="fas fa-user-circle" style="color: var(--primary);"></i>
-                                <span style="font-weight: 600;">${author}</span>
+                        <h1 class="reading-title">${escapeHtml(data.title)}</h1>
+                        
+                        <div class="reading-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-user-circle"></i>
+                                <span>${escapeHtml(author)}</span>
                             </div>
-                            <div class="view-meta-item">
-                                <i class="fas fa-calendar-alt" style="color: var(--secondary);"></i>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar-alt"></i>
                                 <span>${created}</span>
                             </div>
-                            <div class="view-meta-item">
-                                <i class="fas fa-eye" style="color: var(--info);"></i>
-                                <span>${views} views</span>
+                            <div class="meta-item">
+                                <i class="fas fa-folder"></i>
+                                <span>${escapeHtml(data.category || 'Uncategorized')}</span>
                             </div>
-                            <div class="view-meta-item">
-                                <i class="fas fa-folder" style="color: var(--accent);"></i>
-                                <span>${data.category || 'Uncategorized'}</span>
+                            ${data.difficulty ? `
+                            <div class="meta-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>${escapeHtml(data.difficulty)}</span>
                             </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Content Section -->
+                    <div class="reading-content">
+                        <div class="content-wrapper">
+                            <div class="read-time">
+                                <i class="fas fa-clock"></i>
+                                <span>${readTime} min read</span>
+                            </div>
+                            
+                            <div class="content-block">
+                                <div class="content-text">
+                                    ${formattedContent}
+                                </div>
+                            </div>
+                            
+                            ${tagsArray.length > 0 ? `
+                                <div class="content-tags">
+                                    ${tagsArray.map(tag => `
+                                        <span class="reading-tag">
+                                            <i class="fas fa-hashtag"></i>
+                                            ${escapeHtml(tag)}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="author-box">
+                                <div class="author-avatar">${escapeHtml(author.charAt(0).toUpperCase())}</div>
+                                <div class="author-info">
+                                    <h4>${escapeHtml(author)}</h4>
+                                    <p>Shared on Aesthetic Academy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Section -->
+                    <div class="reading-actions">
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="shareContent('${type}', '${data.id}')">
+                                <i class="fas fa-share-alt"></i>
+                                Share
+                            </button>
+                            <button class="btn btn-outline" onclick="printContent()">
+                                <i class="fas fa-print"></i>
+                                Print
+                            </button>
+                            <button class="reading-btn-like ${liked ? 'active' : ''}" onclick="toggleLike('${type}', '${data.id}')">
+                                <i class="fas fa-heart"></i>
+                                <span>${likes}</span>
+                            </button>
                         </div>
                         
-                        ${additionalInfo}
-                    </div>
-                    
-                    <div class="view-body">
-                        <div class="view-body-content">
-                            ${formattedContent}
-                        </div>
-                    </div>
-                    
-                    ${tagsArray.length > 0 ? `
-                        <div class="view-tags">
-                            <div style="font-weight: 600; color: var(--dark); margin-bottom: 10px;">
-                                <i class="fas fa-tags"></i> Tags:
-                            </div>
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                ${tagsArray.map(tag => `
-                                    <span class="view-tag">
-                                        <i class="fas fa-hashtag"></i>
-                                        ${escapeHtml(tag)}
-                                    </span>
-                                `).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="view-actions">
-                        <div class="view-stats">
-                            <button class="view-like-btn ${liked ? 'liked' : ''}" 
-                                    onclick="toggleLike('${type}', '${data.id}')">
-                                <i class="fas fa-heart"></i>
-                                <span class="like-count">${likes}</span>
-                                <span>${liked ? 'Liked' : 'Like'}</span>
-                            </button>
-                            <div class="view-stat">
+                        <div class="reading-stats">
+                            <div class="reading-stat">
                                 <i class="fas fa-eye"></i>
                                 <span>${views} views</span>
                             </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-icon" onclick="shareContent('${type}', '${data.id}')" 
-                                    title="Share">
-                                <i class="fas fa-share-alt"></i>
-                            </button>
-                            <button class="btn btn-icon" onclick="printContent()" title="Print">
-                                <i class="fas fa-print"></i>
-                            </button>
+                            <div class="reading-stat">
+                                <i class="fas fa-comment"></i>
+                                <span>0 comments</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2496,11 +2707,69 @@
         }
     }
 
+    // ==================== HELPER FUNCTIONS ====================
+    function getTypeIcon(type) {
+        switch(type) {
+            case 'fitness': return 'clipboard-list';
+            case 'workout': return 'dumbbell';
+            case 'discussion': return 'comments';
+            default: return 'file-alt';
+        }
+    }
+
+    function getTypeName(type) {
+        switch(type) {
+            case 'fitness': return 'Fitness Plan';
+            case 'workout': return 'Workout Plan';
+            case 'discussion': return 'Discussion';
+            default: return 'Content';
+        }
+    }
+
     // ==================== CONTENT FORMATTING HELPER ====================
-    function formatContentForDisplay(content) {
+    function formatContentForDisplay(content, type) {
         if (!content) return '<p>No content available.</p>';
         
-        let formatted = content
+        let formatted = content;
+        
+        // Format workout tables
+        if (type === 'workout') {
+            const tablePattern = /\|(.+)\|/g;
+            let tablesFound = false;
+            const lines = content.split('\n');
+            let result = '';
+            let inTable = false;
+            let tableRows = [];
+            
+            for (let line of lines) {
+                if (line.trim().match(/^\|.*\|$/)) {
+                    if (!inTable) {
+                        inTable = true;
+                        tableRows = [];
+                    }
+                    tableRows.push(line.trim());
+                } else {
+                    if (inTable) {
+                        result += formatAsTable(tableRows);
+                        inTable = false;
+                        tablesFound = true;
+                    }
+                    result += line + '\n';
+                }
+            }
+            
+            if (inTable) {
+                result += formatAsTable(tableRows);
+                tablesFound = true;
+            }
+            
+            if (tablesFound) {
+                formatted = result;
+            }
+        }
+        
+        // Basic formatting
+        formatted = formatted
             .replace(/\n\s*\n/g, '</p><p>')
             .replace(/\n/g, '<br>');
         
@@ -2508,13 +2777,22 @@
             formatted = '<p>' + formatted + '</p>';
         }
         
+        // Headers
         formatted = formatted.replace(/^#{1,6}\s+(.+)$/gm, (match, p1) => {
             const level = match.match(/#/g).length;
             return `<h${level} style="margin-top: 1.5rem; margin-bottom: 0.8rem; color: var(--primary);">${p1}</h${level}>`;
         });
         
+        // Lists
         formatted = formatted.replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>');
         
+        // Bold
+        formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        
+        // Italic
+        formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        
+        // Combine paragraphs and lists
         const lines = formatted.split('</p>');
         let inList = false;
         let result = '';
@@ -2540,6 +2818,34 @@
         }
         
         return result;
+    }
+
+    function formatAsTable(rows) {
+        if (rows.length < 2) return '';
+        
+        let html = '<div style="overflow-x: auto; margin: 1.5rem 0;">';
+        html += '<table class="workout-table">';
+        
+        // Header row
+        const headerCells = rows[0].split('|').filter(cell => cell.trim());
+        html += '<tr>';
+        headerCells.forEach(cell => {
+            html += `<th>${escapeHtml(cell.trim())}</th>`;
+        });
+        html += '</tr>';
+        
+        // Data rows
+        for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].split('|').filter(cell => cell.trim());
+            html += '<tr>';
+            cells.forEach(cell => {
+                html += `<td>${escapeHtml(cell.trim())}</td>`;
+            });
+            html += '</tr>';
+        }
+        
+        html += '</table></div>';
+        return html;
     }
 
     // ==================== LIKE SYSTEM ====================
