@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💪%3C/text%3E%3C/svg%3E">
+    <title>💪 Free Gym Courses | Fitness BD</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <base target="_blank">
+<base target="_blank">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>Fitness BD</span>
+            <span id="connectionStatus" class="connection-status offline" title="Connection status">
+                <i class="fas fa-wifi-slash"></i>
+            </span>
+        </div>
+        <div class="nav-toggle" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="nav-menu" id="navMenu">
+            <li><a href="#home" onclick="closeMenu()"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="#courses" onclick="closeMenu()"><i class="fas fa-graduation-cap"></i> Courses</a></li>
+            <li><a href="#" onclick="showPasswordPrompt(); closeMenu(); return false;"><i class="fas fa-plus-circle"></i> New Courses</a></li>
+            <li><a href="#progress" onclick="closeMenu()"><i class="fas fa-chart-line"></i> Progress</a></li>
+        </ul>
+    </nav>
+
+    <div id="protocolWarning" style="display: none; background: #ff4757; color: white; padding: 10px; text-align: center; position: fixed; top: 70px; width: 100%; z-index: 999; font-size: 0.9rem;">
+        <i class="fas fa-exclamation-triangle"></i> 
+        <strong>Warning:</strong> Running from file:// protocol. Firebase and some features will not work. 
+        Use a local server: <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px;">python -m http.server 8000</code>
+        <button onclick="document.getElementById('protocolWarning').style.display='none'" style="margin-left: 10px; background: white; color: #ff4757; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer;">✕</button>
+    </div>
+    <script>
+        if (window.location.protocol === 'file:') {
+            document.getElementById('protocolWarning').style.display = 'block';
+        }
+    </script>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>🏋️‍♂️ Start Your Fitness Journey</h1>
+                <p>Completely Free Gym Courses, Video Tutorials and PDF Guides</p>
+                <button class="btn-primary" onclick="scrollToSection('courses')">
+                    Browse Courses <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <i class="fas fa-video"></i>
+                    <h3 id="totalVideos">0</h3>
+                    <p>Video Courses</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-file-pdf"></i>
+                    <h3 id="totalPDFs">0</h3>
+                    <p>PDF Guides</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-fire"></i>
+                    <h3 id="totalCalories">0</h3>
+                    <p>Calories Burned</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="courses" class="section">
+            <h2 class="section-title"><i class="fas fa-dumbbell"></i> My Courses</h2>
+
+            <div class="filter-container">
+                <button class="filter-btn active" onclick="filterCourses('all')">All</button>
+                <button class="filter-btn" onclick="filterCourses('chest')">Chest</button>
+                <button class="filter-btn" onclick="filterCourses('back')">Back</button>
+                <button class="filter-btn" onclick="filterCourses('legs')">Legs</button>
+                <button class="filter-btn" onclick="filterCourses('shoulder')">Shoulder</button>
+                <button class="filter-btn" onclick="filterCourses('abs')">Abs</button>
+            </div>
+
+            <div id="coursesGrid" class="courses-grid">
+            </div>
+        </section>
+
+        <section id="progress" class="section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Your Progress</h2>
+
+            <div class="progress-container">
+                <div class="progress-card">
+                    <h3>Today's Workout</h3>
+                    <div class="circular-progress" id="dailyProgress">
+                        <div class="progress-value">0%</div>
+                    </div>
+                    <p>Daily Goal: 60 Minutes</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <i class="fas fa-calendar-check"></i>
+                        <h4 id="weeklyWorkouts">0</h4>
+                        <p>This Week</p>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-fire-alt"></i>
+                        <h4 id="monthlyCalories">0</h4>
+                        <p>This Month's Calories</p>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-trophy"></i>
+                        <h4 id="streakDays">0</h4>
+                        <p>Day Streak</p>
+                    </div>
+                </div>
+
+                <div class="weight-tracker">
+                    <h3><i class="fas fa-weight"></i> Weight Tracker</h3>
+                    <div class="weight-input-group">
+                        <input type="number" id="currentWeight" placeholder="Current Weight (kg)" step="0.1">
+                        <button onclick="addWeight()" class="btn-primary">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                    <div id="weightHistory" class="weight-history"></div>
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="add-course" class="section bg-dark" style="display: none;">
+            <div class="admin-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <h2 class="section-title" style="margin: 0;"><i class="fas fa-plus-circle"></i> Add New Course</h2>
+                <button onclick="logoutAdmin()" class="btn-primary" style="background: #ff4757;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+
+            <form id="courseForm" class="course-form" onsubmit="addCourse(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Course Name</label>
+                    <input type="text" id="courseName" placeholder="e.g.: Basic Chest Workout" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-list"></i> Category</label>
+                    <select id="courseCategory" required>
+                        <option value="chest">Chest</option>
+                        <option value="back">Back</option>
+                        <option value="legs">Legs</option>
+                        <option value="shoulder">Shoulder</option>
+                        <option value="abs">Abs</option>
+                        <option value="arms">Arms</option>
+                        <option value="cardio">Cardio</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fab fa-youtube"></i> YouTube Video URL</label>
+                    <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=... or https://youtu.be/..." required>
+                    <button type="button" onclick="testYouTubeUrl()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #2ed573; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-check"></i> Verify URL
+                    </button>
+                    <small style="display: block; margin-top: 0.3rem; color: #aaa;">
+                        Supported: youtube.com/watch?v=..., youtu.be/..., youtube.com/shorts/..., youtube.com/embed/...
+                    </small>
+                    <div id="videoPreview"></div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-file-pdf"></i> PDF File (Optional)</label>
+                    <input type="file" id="pdfFile" accept=".pdf" onchange="handlePDFUpload(this)">
+                    <div id="pdfPreview" class="pdf-preview hidden">
+                        <i class="fas fa-file-pdf"></i> <span id="pdfName"></span>
+                        <button type="button" onclick="removePDF()" class="btn-remove"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="courseDesc" rows="3" placeholder="Enter details about the course..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Duration (Minutes)</label>
+                    <input type="number" id="duration" placeholder="30" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-fire"></i> Calories Burn</label>
+                    <input type="number" id="calories" placeholder="200" min="1" required>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Save Course
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3><i class="fas fa-dumbbell"></i> Fitness BD</h3>
+                <p>Your fitness companion. Free gym courses, video tutorials and PDF guides.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4><i class="fas fa-link"></i> Quick Links</h4>
+                <ul>
+                    <li><a href="#home" onclick="scrollToSection('home')">Home</a></li>
+                    <li><a href="#courses" onclick="scrollToSection('courses')">Courses</a></li>
+                    <li><a href="#add-course" onclick="scrollToSection('add-course')">New Courses</a></li>
+                    <li><a href="#progress" onclick="scrollToSection('progress')">Progress</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h4><i class="fas fa-address-card"></i> Contact</h4>
+                <p><i class="fas fa-envelope"></i> support@fitnessbd.com</p>
+                <p><i class="fas fa-phone"></i> +880 1XXX-XXXXXX</p>
+                <p><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
+            </div>
+
+            <div class="footer-newsletter">
+                <h4><i class="fas fa-paper-plane"></i> Newsletter</h4>
+                <p>Subscribe to get new courses and updates</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('✅ Subscribed!');">
+                    <input type="email" placeholder="Your email" required>
+                    <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Fitness BD. All Rights Reserved.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="passwordModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close-btn" onclick="closePasswordModal()">&times;</span>
+            <h2><i class="fas fa-lock"></i> Enter Password</h2>
+            <p style="color: var(--gray); margin: 1rem 0;">Password required to add new courses</p>
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <input type="password" id="adminPassword" placeholder="Enter password" style="text-align: center; font-size: 1.1rem;">
+            </div>
+            <p id="passwordError" style="color: #ff4757; margin-top: 0.5rem; display: none;">❌ Incorrect Password!</p>
+            <button onclick="checkPassword()" class="btn-submit" style="margin-top: 1rem;">
+                <i class="fas fa-unlock"></i> Enter
+            </button>
+        </div>
+    </div>
+
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAI5ICTcNxmStRZcVCF7qKgBndYwn076Pg",
+            authDomain: "fitness-dd071.firebaseapp.com",
+            projectId: "fitness-dd071",
+            storageBucket: "fitness-dd071.firebasestorage.app",
+            messagingSenderId: "880610239306",
+            appId: "1:880610239306:web:dca76b0159e28da2ef97b3"
+        };
+
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+
+            db.enablePersistence({
+                synchronizeTabs: true
+            }).catch((err) => {
+                console.log('Persistence error:', err);
+            });
+
+            console.log('✅ Firebase initialized successfully');
+        } catch (error) {
+            console.error('❌ Firebase initialization failed:', error);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((registration) => {
+                        console.log('✅ SW registered:', registration);
+                    })
+                    .catch((error) => {
+                        console.log('⚠️ SW registration failed:', error);
+                    });
+            });
+        } else {
+            console.log('⚠️ Service Worker skipped (file:// protocol or not supported)');
+        }
+    </script>
+</body>
+</html>
